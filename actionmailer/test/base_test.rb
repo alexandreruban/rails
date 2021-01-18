@@ -8,6 +8,7 @@ require "active_support/time"
 
 require "mailers/base_mailer"
 require "mailers/proc_mailer"
+require "mailers/lazy_proc_mailer"
 require "mailers/asset_mailer"
 
 class BaseTest < ActiveSupport::TestCase
@@ -831,6 +832,12 @@ class BaseTest < ActiveSupport::TestCase
   test "we can call other defined methods on the class as needed" do
     mail = ProcMailer.welcome
     assert_equal("Thanks for signing up this afternoon", mail.subject)
+  end
+
+  test "proc default values are not evaluated when overriden" do
+    email = LazyProcMailer.welcome
+    assert_equal ["overriden-from@example.com"], email.from
+    assert_equal ["overriden-to@example.com"], email.to
   end
 
   test "modifying the mail message with a before_action" do
